@@ -139,5 +139,5 @@ def __update():
     pygame.display.update(_clear_next_frame + _clear_this_frame)
     # Get ready for the next call
     _clear_this_frame = _clear_next_frame
+    _clear_next_frame = []
     _blits = []
-            
