@@ -78,7 +78,7 @@ def init(bg, virtual_size = (1024,768), real_size = (0,0), fullscreen = 0):
     flags = 0
     if fullscreen:
         flags = pygame.FULLSCREEN
-    screen = pygame.display.set_mode(real_size, flags, 32)
+    screen = pygame.display.set_mode(real_size, flags)
     real_size = screen.get_size()
 
     pygame.display.set_caption("APH")
