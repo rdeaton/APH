@@ -9,6 +9,30 @@ _layers = []
 _static_blits = {}
 _blits = []
 
+## Auxillary functions to help with scaling
+def _scale_pos(t):
+    """ Scales a position tuple """
+    global _scalefactor
+    return (t[0] * _scalefactor[0], t[1] * _scalefactor[1])
+    
+def _unscale_pos(t):
+    """ Unscales a position tuple """
+    global _scalefactor
+    return (t[0] / _scalefactor[0], t[1] / _scalefactor[1])
+    
+def _scale_rect(r):
+    """ Scales a rectangle """
+    global _scalefactor
+    return pygame.Rect(_scale_pos((r.left, r.top)),
+                       _scale_pos((r.width, r.height)))
+
+def _unscale_rect(r):
+    """ Unscales a retangle """
+    global _scalefactor
+    return pygame.Rect(_unscale_pos((r.left, r.top)),
+                       _unscale_pos((r.width, r.height)))
+
+
 def static_blit(name, surface, position, layer):
     global _static_blits
     r = pygame.rect.Rect(position, surface.get_size())
