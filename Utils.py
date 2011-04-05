@@ -27,7 +27,7 @@ def load_image(fullname, colorkey=None):
         if colorkey is -1:
             colorkey = image.get_at((0,0))
         image.set_colorkey(colorkey, pygame.locals.RLEACCEL)
-    return image.convert()
+    return image.convert_alpha()
     
 def dist2(x,y):
     return (x[0]-y[0]) ** 2 + (x[1]-y[1]) ** 2

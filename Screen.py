@@ -1,5 +1,5 @@
 import pygame
-import Utils
+from Utils import *
 
 # Let's setup some global variables
 _dirty_rects = []
@@ -32,18 +32,26 @@ def _unscale_rect(r):
     return pygame.Rect(_unscale_pos((r.left, r.top)),
                        _unscale_pos((r.width, r.height)))
 
+@memoize
+def _scale_surface(s):
+    t = pygame.transform.smoothscale(s, _scale_pos(s.get_size()), pygame.Surface(_scale_pos(s.get_size())).convert_alpha())
+    return t
 
 def static_blit(name, surface, position, layer):
     global _static_blits
     r = pygame.rect.Rect(position, surface.get_size())
-    _static_blits['name'] = (surface, r, __verify_layer(layer))
+    _static_blits['name'] = (_scale_surface(surface),
+                             _scale_rect(r),
+                             __verify_layer(layer))
     # We also add this as a moving blit for one frame, so that it actually
     # gets drawn
     moving_blit(surface, position, layer)
 
 def moving_blit(surface, position, layer):
     global _blits
-    _blits.append( (surface, position, __verify_layer(layer)))
+    _blits.append( (_scale_surface(surface),
+                    _scale_pos(position),
+                    __verify_layer(layer)))
 
 def __sort_blits(blits):
     """ Takes in a list of tuples (surface, position, layer) and sorts it by
@@ -74,7 +82,7 @@ def init(bg, virtual_size = (1024,768), real_size = (0,0), fullscreen = 0):
     real_size = screen.get_size()
 
     pygame.display.set_caption("APH")
-    background = Utils.load_image(bg)
+    background = load_image(bg)
     background = pygame.transform.smoothscale(background, real_size).convert()
     screen.blit(background, (0,0))
     pygame.display.flip()
