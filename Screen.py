@@ -13,12 +13,12 @@ _blits = []
 def _scale_pos(t):
     """ Scales a position tuple """
     global _scalefactor
-    return (t[0] * _scalefactor[0], t[1] * _scalefactor[1])
+    return (int(t[0] * _scalefactor[0]), int(t[1] * _scalefactor[1]))
     
 def _unscale_pos(t):
     """ Unscales a position tuple """
     global _scalefactor
-    return (t[0] / _scalefactor[0], t[1] / _scalefactor[1])
+    return (int(t[0] / _scalefactor[0]), int(t[1] / _scalefactor[1]))
     
 def _scale_rect(r):
     """ Scales a rectangle """
