@@ -5,7 +5,7 @@
 import Screen
 
 def init(bg, virtual_size = (1024, 768), real_size = (0,0), fullscreen = False):
-    """ Initialize the APH library. bg is the path to a background image file,
+    """ Initialize the APH library. bg is a color tuple for pygame,
     virtual_size is the drawable size available to the user,
     real_size is the size of the actual display. If real_size is (0,0),
     APH uses the current screen resolution, or a close size if fullscreened """

@@ -82,8 +82,8 @@ def init(bg, virtual_size = (1024,768), real_size = (0,0), fullscreen = 0):
     real_size = screen.get_size()
 
     pygame.display.set_caption("APH")
-    background = load_image(bg)
-    background = pygame.transform.smoothscale(background, real_size).convert()
+    background = pygame.Surface(real_size)
+    background.fill(bg)
     screen.blit(background, (0,0))
     pygame.display.flip()
     
