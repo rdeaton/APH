@@ -10,7 +10,7 @@ _static_blits = {}
 _blits = []
 
 ## Auxillary functions to help with scaling
-def _scale_pos(t):
+def __scale_pos(t):
     """ Scales a position tuple """
     global _scalefactor
     return (int(t[0] * _scalefactor[0]), int(t[1] * _scalefactor[1]))
@@ -20,11 +20,11 @@ def _unscale_pos(t):
     global _scalefactor
     return (int(t[0] / _scalefactor[0]), int(t[1] / _scalefactor[1]))
     
-def _scale_rect(r):
+def __scale_rect(r):
     """ Scales a rectangle """
     global _scalefactor
-    return pygame.Rect(_scale_pos((r.left, r.top)),
-                       _scale_pos((r.width, r.height)))
+    return pygame.Rect(__scale_pos((r.left, r.top)),
+                       __scale_pos((r.width, r.height)))
 
 def _unscale_rect(r):
     """ Unscales a retangle """
@@ -33,15 +33,15 @@ def _unscale_rect(r):
                        _unscale_pos((r.width, r.height)))
 
 @memoize
-def _scale_surface(s):
-    t = pygame.transform.smoothscale(s, _scale_pos(s.get_size()), pygame.Surface(_scale_pos(s.get_size())).convert_alpha())
+def __scale_surface(s):
+    t = pygame.transform.smoothscale(s, __scale_pos(s.get_size()), pygame.Surface(__scale_pos(s.get_size())).convert_alpha())
     return t
 
 def static_blit(name, surface, position, layer):
     global _static_blits
     r = pygame.rect.Rect(position, surface.get_size())
-    _static_blits['name'] = (_scale_surface(surface),
-                             _scale_rect(r),
+    _static_blits['name'] = (__scale_surface(surface),
+                             __scale_rect(r),
                              __verify_layer(layer))
     # We also add this as a moving blit for one frame, so that it actually
     # gets drawn
@@ -49,8 +49,8 @@ def static_blit(name, surface, position, layer):
 
 def moving_blit(surface, position, layer):
     global _blits
-    _blits.append( (_scale_surface(surface),
-                    _scale_pos(position),
+    _blits.append( (__scale_surface(surface),
+                    __scale_pos(position),
                     __verify_layer(layer)))
 
 def __sort_blits(blits):
@@ -105,7 +105,7 @@ def init_layers(layers):
     global _layers
     _layers = layers
     
-def __update():
+def update():
     global _dirty_rects, _clear_this_frame, _clear_next_frame, _layers
     global _blits, _static_blits, _background, _screen
     
