@@ -121,8 +121,6 @@ def __update():
     __sort_blits(s)
     __sort_blits(_blits)
     i = j = 0
-    print s
-    print _blits
     # Reminder: blits are (surf, pos, layer)
     for layer in _layers:
         while i < len(s) and s[i][2] == layer:
