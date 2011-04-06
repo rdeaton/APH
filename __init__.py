@@ -33,3 +33,8 @@ def add_static_blit(name, surface, position, layer=''):
 def update():
     """ Must be called once per frame. """
     Screen.update()
+    
+def set_background(im):
+    """ Sets a new surface as the background image for the game. If im is not
+    the size of the real display, then it is scaled accordingly """
+    Screen.set_background(im)
