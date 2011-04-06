@@ -16,6 +16,7 @@ class memoize(object):
     def __repr__(self):
         return self.func.__doc__
 
+@memoize
 def load_image(fullname, colorkey=None):
     try:
         image = pygame.image.load(fullname)
