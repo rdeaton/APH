@@ -29,3 +29,7 @@ def add_static_blit(name, surface, position, layer=''):
     it can be removed once it is no longer needed on screen. If layer is '',
     default to the bottom-most layer. """
     Screen.static_blit(name, surface, position, layer)
+    
+def update():
+    """ Must be called once per frame. """
+    Screen.update()
