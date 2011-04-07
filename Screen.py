@@ -1,5 +1,6 @@
 import pygame
 from Utils import *
+from math import floor,ceil
 
 # Let's setup some global variables
 _dirty_rects = []
@@ -13,12 +14,12 @@ _blits = []
 def __scale_pos(t):
     """ Scales a position tuple """
     global _scalefactor
-    return (int(t[0] * _scalefactor[0]), int(t[1] * _scalefactor[1]))
+    return (floor(t[0] * _scalefactor[0]), ceil(t[1] * _scalefactor[1]))
     
 def _unscale_pos(t):
     """ Unscales a position tuple """
     global _scalefactor
-    return (int(t[0] / _scalefactor[0]), int(t[1] / _scalefactor[1]))
+    return (floor(t[0] / _scalefactor[0]), ceil(t[1] / _scalefactor[1]))
     
 def __scale_rect(r):
     """ Scales a rectangle """
