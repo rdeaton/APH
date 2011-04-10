@@ -24,15 +24,18 @@ def _unscale_pos(t):
 def __scale_rect(r):
     """ Scales a rectangle """
     global _scalefactor
-    return pygame.Rect(__scale_pos((r.left, r.top)),
-                       __scale_pos((r.width, r.height)))
+    return pygame.Rect((floor(r.left   * _scalefactor[0]),
+                        floor(r.top    * _scalefactor[1])),
+                       (ceil( r.width  * _scalefactor[0]),
+                        ceil( r.height * _scalefactor[1])))
 
 def _unscale_rect(r):
     """ Unscales a retangle """
     global _scalefactor
-    return pygame.Rect(_unscale_pos((r.left, r.top)),
-                       _unscale_pos((r.width, r.height)))
-
+    return pygame.Rect((floor(r.left   / _scalefactor[0]),
+                        floor(r.top    / _scalefactor[1])),
+                       (ceil( r.width  / _scalefactor[0]),
+                        ceil( r.height / _scalefactor[1])))
 @memoize
 def __scale_surface(s):
     t = pygame.transform.smoothscale(s, __scale_pos(s.get_size()), pygame.Surface(__scale_pos(s.get_size())).convert_alpha())
