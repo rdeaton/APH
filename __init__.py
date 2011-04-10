@@ -38,3 +38,9 @@ def set_background(im):
     """ Sets a new surface as the background image for the game. If im is not
     the size of the real display, then it is scaled accordingly """
     Screen.set_background(im)
+    
+def new_surface(size):
+    """ Gets a new surface which is suitable for drawing to the window. This
+    is necessary in order to maintain compatibility across platforms when using
+    APH's scaling code. """
+    return Screen.new_surface(size)

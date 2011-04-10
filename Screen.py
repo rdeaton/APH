@@ -150,3 +150,8 @@ def update():
     _clear_this_frame = _clear_next_frame
     _clear_next_frame = []
     _blits = []
+    
+def new_surface(size):
+    global _screen
+    # returns a Surface guaranteed to have alpha support and a high color depth
+    return pygame.Surface(size, pygame.locals.SRCALPHA, 32)
