@@ -11,6 +11,7 @@ WIDTH = 400
 HEIGHT = 300
 
 class Ball(Sprite):
+    """ A silly example which has a ball spinning in a circle. """
     im = {}
     def __init__(self, layer, color, speed, center = (200, 150), arc_size = 100):
         """ Layer is the layer to render on. Color is a color tuple. Speed is
@@ -50,13 +51,13 @@ class Circles(NewGame):
         self.circle_group.update(self.t)
         self.circle_group.draw()
         
-        Screen().draw()
+        GetScreen().draw()
         for event in pygame.event.get():
             if event.type == QUIT:
                 self.quit = True
             if event.type == pygame.MOUSEBUTTONUP:
                 self.quit = True
-        
+    
         
 if __name__ == "__main__":
     g = Circles((255, 255, 255), (WIDTH, HEIGHT), (0,0), True)
@@ -65,7 +66,7 @@ if __name__ == "__main__":
     
     clock = pygame.time.Clock()
 
-    while not Game().quit:
+    while not GetGame().quit:
         clock.tick(30)
-        Game().main_loop()
+        GetGame().main_loop()
         print clock.get_fps()

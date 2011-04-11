@@ -52,9 +52,9 @@ class Sprite(object):
     def draw(self):
         """ Draw this object to the display. It will always use the current
             screen state for drawing. """
-        Screen().moving_blit(self.image,
-                             self.position,
-                             self.layer)
+        GetScreen().moving_blit(self.image,
+                                self.position,
+                                self.layer)
     def update(self, *args):
         """ Called once per frame. """
         pass

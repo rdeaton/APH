@@ -2,9 +2,10 @@
 # This file allows the user to import module APH
 from Game import GameState
 
-def Game():
+def GetGame():
     """ Returns the current GameState. """
     return GameState.stack[-1]
     
-def Screen():
-    return Game().screen_state
+def GetScreen():
+    """ Returns the current ScreenState from the current GameState"""
+    return GetGame().screen_state
