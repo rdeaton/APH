@@ -36,3 +36,18 @@ def load_image(fullname, colorkey=None):
 def dist2(pt1,pt2):
     """ Returns the square of a distance between two points"""
     return (pt1[0]-pt2[0]) ** 2 + (pt1[1]-pt2[1]) ** 2
+    
+def smooth_rotate(surf, angle, scale=10):
+    """ Performs a smoother rotation of a surface by scaling, rotating, and
+    rescaling on rotations. """
+    s = surf.get_width()
+    surf2 = pygame.transform.rotozoom(surf, angle, scale)
+    d = int(round((surf2.get_width() - s * scale) / 2.))
+    surf2 = pygame.transform.chop(surf2, (0, 0, d, d))
+    surf2 = pygame.transform.chop(surf2, (s * scale, s * scale, 2*d, 2*d))
+    surf2 = pygame.transform.scale(surf2, (s, s))
+    return surf2
+    
+def smooth_rotate_set(surf, nangles = 36, scale = 10):
+    return [pygame.transform.rotate(surf, theta * 360. / nangles) for theta in range(nangles)]
+    
