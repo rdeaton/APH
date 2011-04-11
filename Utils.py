@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 
 class memoize(object):
     """ This is a decorator to allow memoization of function calls. """
@@ -30,7 +31,7 @@ def load_image(fullname, colorkey=None):
     if colorkey is not None:
         if colorkey is -1:
             colorkey = image.get_at((0,0))
-        image.set_colorkey(colorkey, pygame.locals.RLEACCEL)
+        image.set_colorkey(colorkey, RLEACCEL)
     return image.convert_alpha()
     
 def dist2(pt1,pt2):
@@ -40,7 +41,7 @@ def dist2(pt1,pt2):
 def smooth_rotate(surf, angle, scale=10):
     """ Performs a smoother rotation of a surface by scaling, rotating, and
     rescaling on rotations. """
-    s = surf.get_width()
+    s = max(surf.get_width(), surf.get_height())
     surf2 = pygame.transform.rotozoom(surf, angle, scale)
     d = int(round((surf2.get_width() - s * scale) / 2.))
     surf2 = pygame.transform.chop(surf2, (0, 0, d, d))
@@ -51,3 +52,7 @@ def smooth_rotate(surf, angle, scale=10):
 def smooth_rotate_set(surf, nangles = 36, scale = 10):
     return [pygame.transform.rotate(surf, theta * 360. / nangles) for theta in range(nangles)]
     
+def new_surface(size):
+    """ returns a Surface guaranteed to work with APH, which has an alpha
+    channel and a 32-bit color depth """
+    return pygame.Surface(size, SRCALPHA, 32)
