@@ -131,8 +131,18 @@ class ScreenState(object):
             while j < len(self._blits) and self._blits[j][2] == layer:
                 # These are moving blits, so we need to make sure that
                 # they will be cleared on the next frame
-                r = self._screen.blit(self._blits[j][0], self._blits[j][1])
-                self._clear_next_frame.append(r)
+                surf, pos = self._blits[j][0], self._blits[j][1]
+                screen_rect = self._screen.get_rect()
+                blit_rect = pygame.Rect(pos, surf.get_size())
+                if screen_rect.contains(blit_rect):
+                    r = self._screen.blit(surf, pos)
+                    self._clear_next_frame.append(r)
+                elif screen_rect.colliderect(blit_rect):
+                    x = blit_rect.clip(screen_rect)
+                    y = x.move(-blit_rect.left,-blit_rect.top)
+                    b = surf.subsurface(y)
+                    r = self._screen.blit(b, x)
+                    self._clear_next_frame.append(r)              
                 j = j + 1
         
         # Do the display update
