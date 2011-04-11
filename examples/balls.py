@@ -33,9 +33,9 @@ class Ball(Sprite):
         self.position = (self.center[0] + self.arc_size * math.sin(theta),
                     self.center[1] + self.arc_size * math.cos(theta))
 
-class Circles(NewGame):
-    def __init__(self, *args):
-        NewGame.__init__(self, *args)
+class Circles(SubGame):
+    def __init__(self):
+        SubGame.__init__(self)
         self.set_layers(['red', 'green', 'blue'])
         
         red = Ball('red', (255, 0, 0), 0.5)
@@ -44,7 +44,6 @@ class Circles(NewGame):
         
         self.circle_group = Group(red, green, blue)
         self.t = 0
-        self.quit = False
         
     def main_loop(self):
         self.t = self.t + 1
@@ -57,15 +56,46 @@ class Circles(NewGame):
                 self.quit = True
             if event.type == pygame.MOUSEBUTTONUP:
                 self.quit = True
-    
+            if event.type == pygame.KEYDOWN:
+                self.pop_state()
+
+class Menu(NewGame):
+    def __init__(self, *args):
+        NewGame.__init__(self, *args)
+        self.set_layers(['menu'])
+        pygame.font.init()
+        font = pygame.font.Font("assets/VeraMono.ttf", 20)
+        text = font.render("Welcome to the ball demo", True, (0, 0, 0))
+        
+        welcome = Sprite()
+        welcome.image = text
+        welcome.position = ((WIDTH - text.get_width()) / 2, 100)
+        
+        font = pygame.font.Font("assets/VeraMono.ttf", 16)
+        text = font.render("Press any key to continue", True, (0, 0, 0))
+
+        cont = Sprite()
+        cont.image = text
+        cont.position = ((WIDTH - text.get_width()) / 2, 200)
+        
+        print welcome
+        
+        self.group = Group(welcome, cont)
+        
+    def main_loop(self):
+        self.group.draw()
+        
+        GetScreen().draw()
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                g = Circles()
+                g.push_state()    
         
 if __name__ == "__main__":
-    g = Circles((255, 255, 255), (WIDTH, HEIGHT), (0,0), True)
+    g = Menu((255, 255, 255), (WIDTH, HEIGHT), (0,0), True)
     g.push_state()
-    
     clock = pygame.time.Clock()
 
     while not GetGame().quit:
         clock.tick(30)
         GetGame().main_loop()
-        print clock.get_fps()
