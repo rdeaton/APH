@@ -73,6 +73,10 @@ class ScreenState(object):
         else:
             return self._layers[0]
             
+    def redraw(self):
+        """ Forces a redraw of everything in this screen. """
+        self._clear_this_frame.append(self._screen.get_rect())
+            
     def static_blit(self, name, surface, position, layer):
         r = pygame.rect.Rect(position, surface.get_size())
         self._static_blits['name'] = (self.__scale_surface(surface),
