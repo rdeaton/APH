@@ -9,6 +9,7 @@ from APH.Sprite import *
 
 WIDTH = 400
 HEIGHT = 300
+FPS = 30.
 
 class Ball(Sprite):
     """ A silly example which has a ball spinning in a circle. """
@@ -29,7 +30,7 @@ class Ball(Sprite):
         self.arc_size = arc_size
         
     def update(self, t):
-        theta = t * 2 / self.speed * math.pi / 180 
+        theta = (float(t) / FPS) * 2 * math.pi * self.speed
         self.position = (self.center[0] + self.arc_size * math.sin(theta),
                     self.center[1] + self.arc_size * math.cos(theta))
 
@@ -38,9 +39,9 @@ class Circles(SubGame):
         SubGame.__init__(self)
         self.set_layers(['red', 'green', 'blue'])
         
-        red = Ball('red', (255, 0, 0), 0.5)
-        green = Ball('green', (0, 255, 0), 0.75)
-        blue = Ball('blue', (0, 0, 255), 0.25)
+        red = Ball('red', (255, 0, 0), 0.25)
+        green = Ball('green', (0, 255, 0), 0.25 / 2.)
+        blue = Ball('blue', (0, 0, 255), 0.5)
         
         self.circle_group = Group(red, green, blue)
         self.t = 0
@@ -97,5 +98,5 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
 
     while not GetGame().quit:
-        clock.tick(30)
+        clock.tick(FPS)
         GetGame().main_loop()
