@@ -172,9 +172,10 @@ class ScreenState(object):
     def __scale_surface(self, s):
         """ Scales a surface from the virtual size to the real size """
         @memoize
-        def scale(s):
-            t = pygame.transform.smoothscale(s, self.__scale_pos(s.get_size()),
-                    new_surface(self.__scale_pos(s.get_size())))
+        def scale(s, factor):
+            size = s.get_size()
+            t = pygame.transform.smoothscale(s,
+                    (size[0] * factor[0], size[1] * factor[1]),
+                    new_surface((size[0] * factor[0], size[1] * factor[1])))
             return t
-            
-        return scale(s)
+        return scale(s, self._scalefactor)
