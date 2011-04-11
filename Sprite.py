@@ -1,5 +1,5 @@
 import pygame
-from APH import *
+from Game import *
 
 class Sprite(object):
     """ Analagous to Sprite in pygame, but automatically handles dirty updates,

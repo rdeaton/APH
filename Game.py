@@ -3,6 +3,14 @@ from Utils import *
 from math import floor, ceil
 from Screen import *
 
+def GetGame():
+    """ Returns the current GameState. """
+    return GameState.stack[-1]
+    
+def GetScreen():
+    """ Returns the current ScreenState from the current GameState"""
+    return GetGame().screen_state
+
 class GameState(object):
     """ Controls the current state of the program. """
     stack = []
@@ -39,6 +47,7 @@ class GameState(object):
         into the previous state. """
         self.transition_out()
         g = GameState.stack.pop()
+        GetScreen().redraw()
         g.transition_in()
         
     def set_layers(self, layers):
@@ -53,3 +62,11 @@ class NewGame(GameState):
         """ See: ScreenState.__init__ """
         GameState.__init__(self)
         self.screen_state = ScreenState(bg, virtual_size, real_size, fullscreen)
+
+class SubGame(GameState):
+    """ A game state which will set up the screen with the same parameters as
+    used earlier in the game. Should be the base subclass for most GameStates.
+    """
+    def __init__(self):
+        GameState.__init__(self)
+        self.screen_state = GetScreen().copy()
