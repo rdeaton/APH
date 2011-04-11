@@ -100,7 +100,7 @@ def init(bg, virtual_size = (1024,768), real_size = (0,0), fullscreen = 0):
     
 def set_background(im):
     global _rsize, _background, _screen, _clear_next_frame
-    if im.get_size() is not _rsize:
+    if im.get_size() != _rsize:
         im = pygame.transform.smoothscale(im, _rsize).convert()
     _clear_this_frame.append(pygame.Rect((0,0), _rsize))
     _background = im
