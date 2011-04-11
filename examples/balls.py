@@ -62,7 +62,6 @@ class Circles(NewGame):
 if __name__ == "__main__":
     g = Circles((255, 255, 255), (WIDTH, HEIGHT), (0,0), True)
     g.push_state()
-    print 'test'
     
     clock = pygame.time.Clock()
 
