@@ -34,20 +34,21 @@ class ScreenState(object):
             background.fill(bg)
             ScreenState._screen.blit(background, (0,0))
             pygame.display.flip()
+            self._background = background
+            
 
         real_size = self._screen.get_size()
 
         self._scalefactor = (float(real_size[0])/virtual_size[0],
                         float(real_size[1])/virtual_size[1])
         self._vsize, self._rsize = virtual_size, real_size
-        self._background = background
         
     def set_background(self, bg):
         """ Set a new background image for the screen. Automatically
         scales it to the appropriate size. """
-        if bg.get_size() != _rsize:
+        if bg.get_size() != self._rsize:
             bg = pygame.transform.smoothscale(bg, self._rsize).convert()
-        self._clear_this_frame.append(pygame.Rect((0,0), _rsize))
+        self._clear_this_frame.append(pygame.Rect((0,0), self._rsize))
         self._background = bg
 
         
@@ -55,9 +56,9 @@ class ScreenState(object):
         """ Makes a "copy" of the current screen state, which includes only
         the same virtual size, background, and layers. All static blits and
         other features will be ignored """
-        s = ScreenState()
-        s.set_background(_self.background)
-        s._layers = self.layers[:] # We don't want to ruin the original
+        s = ScreenState((0,0,0), self._vsize)
+        s.set_background(self._background)
+        s._layers = self._layers[:] # We don't want to ruin the original
         return s
         
     def set_layers(self, layers):
