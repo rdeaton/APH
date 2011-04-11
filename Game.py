@@ -3,10 +3,6 @@ from Utils import *
 from math import floor, ceil
 from Screen import *
 
-def Game():
-    """ Returns the current GameState. """
-    return GameState.stack[-1]
-
 class GameState(object):
     """ Controls the current state of the program. """
     stack = []
