@@ -189,8 +189,10 @@ class ScreenState(object):
         @memoize
         def scale(s, factor):
             size = s.get_size()
+            new_size = (int(ceil(size[0] * factor[0])),
+                       int(ceil(size[1] * factor[1])))
             t = pygame.transform.smoothscale(s,
-                    (size[0] * factor[0], size[1] * factor[1]),
-                    new_surface((size[0] * factor[0], size[1] * factor[1])))
+                    new_size,
+                    new_surface(new_size))
             return t
         return scale(s, self._scalefactor)

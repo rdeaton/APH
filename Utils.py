@@ -55,4 +55,4 @@ def smooth_rotate_set(surf, nangles = 36, scale = 10):
 def new_surface(size):
     """ returns a Surface guaranteed to work with APH, which has an alpha
     channel and a 32-bit color depth """
-    return pygame.Surface(size, SRCALPHA, 32)
+    return pygame.Surface((int(size[0]), int(size[1])), SRCALPHA, 32)
