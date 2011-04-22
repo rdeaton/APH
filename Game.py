@@ -60,6 +60,10 @@ class GameState(object):
     def get_layers(self):
         return self._layers[:]
         
+    def test_quit(self):
+        if len(pygame.event.get(pygame.QUIT)) > 0:
+            self.quit = True
+        
 class NewGame(GameState):
     """ Represents a new game, and sets up the screen accordingly. """
     def __init__(self, bg, virtual_size, real_size = (0,0), fullscreen = False):
