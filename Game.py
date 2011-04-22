@@ -20,7 +20,7 @@ class GameState(object):
         of required instance variables. """
         self.quit = False
         self.screen_state = None
-        self.layers = []
+        self._layers = []
     
     def transition_in(self):
         """ Called when this state is transitioned into being. """
@@ -53,8 +53,11 @@ class GameState(object):
     def set_layers(self, layers):
         """ Sets the layers for the current game state, as a list of layers
         from bottom-most to top-most. """
-        self.layers = layers
+        self._layers = layers
         self.screen_state.set_layers(layers)
+        
+    def get_layers(self):
+        return self._layers[:]
         
 class NewGame(GameState):
     """ Represents a new game, and sets up the screen accordingly. """

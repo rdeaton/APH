@@ -65,6 +65,9 @@ class ScreenState(object):
         """ Sets the layers for drawing, from bottom to highest. """
         self._layers = layers[:] # We don't want to rely on the original
     
+    def get_layers(self):
+        return self._layers[:]
+    
     def __verify_layer(self, layer):
         """ Ensures that the layer passed in is a valid layer and returns it.
         If the layer is invalid, gives the bottom-most layer."""
