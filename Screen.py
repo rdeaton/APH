@@ -99,9 +99,7 @@ class ScreenState(object):
         def sort_blits(blits):
             """ Takes in a list of tuples (surface, position, layer) and sorts
             it by layer in place. """
-            global _layers
             def sort_blits_cmp(x, y):
-                global _layers
                 # These calls to _layers.index could get costly with more layers
                 return self._layers.index(x[2]) - self._layers.index(y[2])
             # This may get slow if there are a lot of layers, but it's the least
