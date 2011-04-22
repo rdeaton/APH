@@ -13,6 +13,11 @@ class Sprite(object):
     def __setattr__(self, item, value):
         if item == 'position':
             self.rect = pygame.Rect((value[1], value[0]), self.image.get_size())
+        elif item == 'layer':
+            layers = GetGame().get_layers()
+            if value not in layers:
+                value = layers[0]
+            self.__dict__[item] = value
         else:
             self.__dict__[item] = value
             
