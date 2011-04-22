@@ -83,7 +83,7 @@ class ScreenState(object):
     def static_blit(self, name, surface, position, layer):
         r = pygame.rect.Rect(position, surface.get_size())
         self._static_blits['name'] = (self.__scale_surface(surface),
-                                      self.__scale_rect(r),
+                                      self.scale_rect(r),
                                       self.__verify_layer(layer))
         # We also add this as a moving blit for one frame, so that it actually
         # gets drawn for the first time
@@ -91,7 +91,7 @@ class ScreenState(object):
     
     def moving_blit(self, surface, position, layer):
         self._blits.append( (self.__scale_surface(surface),
-                             self.__scale_pos(position),
+                             self.scale_pos(position),
                              self.__verify_layer(layer)))
             
     def draw(self):
@@ -158,26 +158,26 @@ class ScreenState(object):
         self._clear_next_frame = []
         self._blits = []
         
-    def __scale_pos(self, t):
+    def scale_pos(self, t):
         """ Scales a position tuple """
         global _scalefactor
         return (floor(t[0] * self._scalefactor[0]),
                 ceil(t[1]  * self._scalefactor[1]))
     
-    def __unscale_pos(self, t):
+    def unscale_pos(self, t):
         """ Unscales a position tuple """
         global _scalefactor
         return (floor(t[0] / self._scalefactor[0]),
                 ceil(t[1]  / self._scalefactor[1]))
     
-    def __scale_rect(self, r):
+    def scale_rect(self, r):
         """ Scales a rectangle """
         return pygame.Rect((floor(r.left   * self._scalefactor[0]),
                             floor(r.top    * self._scalefactor[1])),
                            (ceil( r.width  * self._scalefactor[0]),
                             ceil( r.height * self._scalefactor[1])))
     
-    def __unscale_rect(self, r):
+    def unscale_rect(self, r):
         """ Unscales a retangle """
         global _scalefactor
         return pygame.Rect((floor(r.left   / self._scalefactor[0]),
