@@ -43,6 +43,9 @@ class ScreenState(object):
                         float(real_size[1])/virtual_size[1])
         self._vsize, self._rsize = virtual_size, real_size
         
+    def get_size(self):
+        return self._vsize
+        
     def set_background(self, bg):
         """ Set a new background image for the screen. Automatically
         scales it to the appropriate size. """
