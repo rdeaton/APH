@@ -197,28 +197,3 @@ class ScreenState(object):
                     new_surface(new_size))
             return t
         return scale(s, self._scalefactor)
-        
-    def get_mouse_events(self):
-        """ Gets all the mouse related events from pygame, scaled appropriately
-        to match the scaled screen resolution. """
-        events = pygame.event.get([pygame.MOUSEMOTION,
-                                  pygame.MOUSEBUTTONUP,
-                                  pygame.MOUSEBUTTONDOWN])
-                                  
-        new_events = []
-        for event in events:
-            new_pos = self.__unscale_pos(event.pos)
-            if event.type == pygame.MOUSEMOTION:
-                new_rel = self.__unscale_pos(event.rel)
-                new_event = pygame.event.Event(pygame.MOUSEMOTION,
-                                               {'pos': new_pos,
-                                                'rel': new_rel,
-                                                'buttons': event.buttons})
-            else:
-                new_event = pygame.event.Event(event.type,
-                                               {'pos': new_pos,
-                                                'button': event.button})
-                                                
-            new_events.append(new_event)
-            
-        return new_events
