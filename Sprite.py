@@ -13,7 +13,7 @@ class Sprite(object):
     
     def __setattr__(self, item, value):
         if item == 'position':
-            self.rect = pygame.Rect((value[1], value[0]), self.image.get_size())
+            self.rect = pygame.Rect((value[0], value[1]), self.image.get_size())
         elif item == 'layer':
             layers = GetGame().get_layers()
             if value not in layers:
@@ -24,7 +24,7 @@ class Sprite(object):
             
     def __getattr__(self, item):
         if item == 'position':
-            return (self.rect.top, self.rect.left)
+            return (self.rect.left, self.rect.top)
         else:
             return self.__dict__[item]
     
