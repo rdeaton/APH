@@ -1,5 +1,6 @@
 import pygame
 from Game import *
+import Mouse
 
 class Sprite(object):
     """ Analagous to Sprite in pygame, but automatically handles dirty updates,
@@ -64,6 +65,69 @@ class Sprite(object):
         """ Called once per frame. """
         pass
         
+class MouseOverSprite(Sprite):
+    """ Represents a set of actions which an object which needs to handle
+    mouseover events should respond to. Some additional properties which
+    are relevant are MouseOverSprite.hover_overlay, which should be set to True
+    if the search for other items which the mouse is over should be continued
+    if the mouse is over this object, or False (as it is by default) if
+    the search should terminate. MouseOverSprite respects layers. """
+
+    def __init__(self, *args):
+        Sprite.__init__(self, *args)
+        self.hover_overlay = False
+        self.mouse_over = False
+
+    def is_mouse_over(self, pos):
+        """ Takes in a position and returns true if the mouse cursor is over
+        this object. The built in method uses the sprite's rect; pixel perfect
+        checks should override this method, but perhaps use rect as a first
+        pass, as this method will be called every frame. """
+        if self.rect.collidepoint(pos):
+            return True
+        return False
+
+    def mouse_on(self):
+        """ Called when the mouse moves over this sprite. """
+        self.mouse_over = True
+
+    def mouse_off(self):
+        """ Called when the mouse moves off of this sprite. """
+        self.mouse_over = False
+        
+class MouseClickSprite(Sprite):
+    """ Represents a set of actions which an object needs to handle mouse
+    click events should respond to. The MouseClickSprite should have a member
+    variable MouseClickSprite.click_overlay, which should be set to True if
+    the search for other clickable items should continue if this object is
+    clicked, or False otherwise (default). MouseClickSprite respects layers. """
+    
+    def __init__(self, *args):
+        Sprite.__init__(self, *args)
+        self.click_overlay = False
+        
+    def is_clicked(self, event):
+        """ Takes a pygame event and returns true if the mouse cursor is
+        where this object should be considered clicked. The built in method uses
+        the sprite's rect; pixel perfect checks should override this method, but
+        perhaps use rect as a first pass, as this method will be called every
+        frame. The built in method also only responds to left mouse click
+        events, and only on button down """
+        if event.button != 1:
+            return False
+        if event.type != pygame.MOUSEBUTTONDOWN:
+            return False
+        if self.rect.collidepoint(event.pos):
+            return True
+        return False
+        
+    def clicked(self, event):
+        """ Called when this object is clicked. """
+        pass
+        
+
+### Group classes ###
+        
 class Group(object):
     """ Behaves like sprite.Group in pygame. """
     
@@ -105,3 +169,68 @@ class Group(object):
         for sprite in self._sprites:
             sprite.remove(self)
         self._sprites = []
+        
+    def sprites(self):
+        return self._sprites[:]
+        
+class MouseGroup(Group):
+    """ A subclass of group which is the same in every way, except on update(),
+    it also handles dispatching mouse events before calling update on all of
+    its Sprites. Non-MouseClickSprite and Non-MouseOverSprites may be mixed in.
+    Only one MouseGroup should exist per GameState, as it will empty all mouse
+    events from the queue. """
+    
+    def __init__(self, *args):
+        Group.__init__(self, *args)
+        self._mouse_previously_over = []
+    
+    def update(self, *args):
+        layers = GetGame().get_layers()
+        def sort_sprites_cmp(x, y):
+            # Sorts sprites by layer from top down
+            return layers.index(y.layer) - layers.index(x.layer)
+        
+        self._sprites.sort(sort_sprites_cmp)
+        
+        # Let's handle mouse clicks first
+        for event in Mouse.get_events():
+            if event.type == pygame.MOUSEMOTION:
+                # We don't really care about these, we'll poll the
+                # mouse directly later
+                continue
+            for sprite in self._sprites:
+                if not isinstance(sprite, MouseClickSprite):
+                    continue
+                if sprite.is_clicked(event):
+                    sprite.clicked(event)
+                    if sprite.click_overlay is not True:
+                        break
+                        
+        # Now let's handle mouseover.
+        mouse_pos = Mouse.get_pos()
+        mouse_now_over = []
+        for sprite in self._sprites:
+            if not isinstance(sprite, MouseOverSprite):
+                continue
+            if sprite.is_mouse_over(mouse_pos):
+                mouse_now_over.append(sprite)
+                # first, is this one that the mouse was previously over
+                if sprite in self._mouse_previously_over:
+                    if sprite.hover_overlay:
+                        continue
+                    else:
+                        break
+                # Now that we know it's not, we tell it the mouse is on it
+                sprite.mouse_on()
+                if sprite.hover_overlay:
+                    continue
+                break
+        
+        for sprite in self._mouse_previously_over:
+            if sprite in mouse_now_over:
+                continue
+            sprite.mouse_off()
+        
+        self._mouse_previously_over = mouse_now_over
+        
+        Group.update(self, *args)
