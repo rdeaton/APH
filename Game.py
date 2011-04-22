@@ -3,6 +3,7 @@ from Utils import *
 from math import floor, ceil
 from Screen import *
 
+# These two funcs need to be here due to cyclic dependencies if put elsewhere.
 def GetGame():
     """ Returns the current GameState. """
     return GameState.stack[-1]
