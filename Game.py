@@ -21,7 +21,7 @@ class GameState(object):
         of required instance variables. """
         self.quit = False
         self.screen_state = None
-        self._layers = []
+        self._layers = ['none']
     
     def transition_in(self):
         """ Called when this state is transitioned into being. """
