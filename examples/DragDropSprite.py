@@ -67,6 +67,8 @@ class DragDropExample(NewGame):
         self.group.draw()
         GetScreen().draw()
         
+        # It is important not to pull all the events off the event queue,
+        # as you may end up throwing away mouse clicks.
         for event in pygame.event.get(pygame.QUIT):
             self.quit = True
 
