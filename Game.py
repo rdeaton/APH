@@ -41,6 +41,7 @@ class GameState(object):
         if GameState.stack != []:
             GameState.stack[-1].transition_out()
         GameState.stack.append(self)
+        GetScreen().redraw()
         self.transition_in()
         
     def pop_state(self):
