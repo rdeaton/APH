@@ -49,7 +49,7 @@ class Sprite(object):
             
     def alive(self):
         """ Return True if this sprite belongs to any groups, false otherwise"""
-        return len(groups) > 0
+        return len(self._groups) > 0
         
     def groups(self):
         """ Return a list of groups that this sprite belongs to. """
@@ -64,6 +64,11 @@ class Sprite(object):
     def update(self, *args):
         """ Called once per frame. """
         pass
+        
+    def remove(self, *groups):
+        for g in groups:
+            if g in self._groups:
+                self._groups.remove(g)
         
 class MouseOverSprite(Sprite):
     """ Represents a set of actions which an object which needs to handle
