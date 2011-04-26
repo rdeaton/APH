@@ -1,7 +1,12 @@
 # APH is APH Pygame Helper
 # This file allows the user to import module APH
 from Borg import BorgImpl
-__all__ = ['Screen', 'Game', 'Utils', 'Sprite', 'Mouse']
+import Screen
+import Game
+import Utils
+import Sprite
+import Mouse
+import Utils
 
 def World():
     """ Returns a class which has it's state shared across all instances of
