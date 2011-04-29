@@ -50,7 +50,7 @@ class GameState(object):
         self.transition_out()
         g = GameState.stack.pop()
         GetScreen().redraw()
-        g.transition_in()
+        GetGame().transition_in()
         
     def set_layers(self, layers):
         """ Sets the layers for the current game state, as a list of layers
