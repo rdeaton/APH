@@ -44,6 +44,7 @@ class ScreenState(object):
         self._vsize, self._rsize = virtual_size, real_size
         
     def get_size(self):
+        """ Returns the virtual resolution of the screen. """
         return self._vsize
         
     def set_background(self, bg):
