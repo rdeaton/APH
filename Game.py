@@ -36,6 +36,19 @@ class GameState(object):
         ScreenState. """
         pass
         
+    def swap_state(self):
+        """ Pops the current state off the stack, and then pushes the caller
+        onto the stack and transitions into it."""
+        if GameState.stack != []:
+            g = GameState.stack.pop()
+            g.transition_out()
+        GameState.stack.append(self)
+        GetScreen().redraw()
+        ## Clear the event queue on state transitions
+        pygame.event.get()
+        self.transition_in()
+
+        
     def push_state(self):
         """ Pushes the current state onto the stack and transitions into it. """
         if GameState.stack != []:
