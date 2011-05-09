@@ -42,6 +42,8 @@ class GameState(object):
             GameState.stack[-1].transition_out()
         GameState.stack.append(self)
         GetScreen().redraw()
+        ## Clear the event queue on state transitions
+        pygame.event.get()
         self.transition_in()
         
     def pop_state(self):
@@ -50,6 +52,8 @@ class GameState(object):
         self.transition_out()
         g = GameState.stack.pop()
         GetScreen().redraw()
+        ## Clear the event queue on state transitions
+        pygame.event.get()
         if GameState.stack != []:
             GameState.stack[-1].transition_in()
         else:
