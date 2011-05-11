@@ -94,7 +94,7 @@ class ScreenState(object):
         # gets drawn for the first time
         self.moving_blit(surface, position, layer)
     
-    def moving_blit(self, surface, position, layer):
+    def moving_blit(self, surface, position, layer = ''):
         self._blits.append( (self.__scale_surface(surface),
                              self.scale_pos(position),
                              self.__verify_layer(layer)))
