@@ -30,12 +30,13 @@ class ScreenState(object):
             ScreenState._screen = pygame.display.set_mode(real_size, flags)
             pygame.display.set_caption("APH")
             real_size = ScreenState._screen.get_size()
-            background = pygame.Surface(real_size)
-            background.fill(bg)
-            ScreenState._screen.blit(background, (0,0))
-            pygame.display.flip()
-            self._background = background
-            
+            pygame.font.init()
+
+        background = pygame.Surface(real_size)
+        background.fill(bg)
+        ScreenState._screen.blit(background, (0,0))
+        pygame.display.flip()
+        self._background = background
 
         real_size = self._screen.get_size()
 
