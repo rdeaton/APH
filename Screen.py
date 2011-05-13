@@ -2,6 +2,16 @@ import pygame
 from Utils import *
 from math import floor, ceil
 
+@memoize
+def scale(s, factor):
+    size = s.get_size()
+    new_size = (int(ceil(size[0] * factor[0])),
+               int(ceil(size[1] * factor[1])))
+    t = pygame.transform.smoothscale(s,
+            new_size,
+            new_surface(new_size))
+    return t
+
 class ScreenState(object):
     """ This will store the state of the screen and handle scaling. """
     _screen = None
@@ -192,13 +202,4 @@ class ScreenState(object):
     
     def __scale_surface(self, s):
         """ Scales a surface from the virtual size to the real size """
-        @memoize
-        def scale(s, factor):
-            size = s.get_size()
-            new_size = (int(ceil(size[0] * factor[0])),
-                       int(ceil(size[1] * factor[1])))
-            t = pygame.transform.smoothscale(s,
-                    new_size,
-                    new_surface(new_size))
-            return t
         return scale(s, self._scalefactor)
