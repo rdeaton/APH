@@ -134,8 +134,9 @@ class ScreenState(object):
         # Now, we need to blit layers, while simultaneously re-blitting
         # any static blits which were obscured    
         s = self._static_blits.values()
-        sort_blits(s)
-        sort_blits(self._blits)
+        if len(self._layers) > 1:
+            sort_blits(s)
+            sort_blits(self._blits)
         i = j = 0
         # Reminder: blits are (surf, pos, layer)
         for layer in self._layers:
