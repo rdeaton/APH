@@ -2,7 +2,7 @@ import pygame
 from Utils import *
 from math import floor, ceil
 
-@memoize
+@memoize2
 def scale(s, factor):
     size = s.get_size()
     new_size = (int(ceil(size[0] * factor[0])),
