@@ -1,6 +1,7 @@
 import pygame
 from Utils import *
 from math import floor, ceil
+from operator import itemgetter
 
 @memoize2
 def scale(s, factor):
@@ -87,9 +88,9 @@ class ScreenState(object):
         """ Ensures that the layer passed in is a valid layer and returns it.
         If the layer is invalid, gives the bottom-most layer."""
         if layer in self._layers:
-            return layer
+            return self._layers.index(layer)
         else:
-            return self._layers[0]
+            return 0
             
     def redraw(self):
         """ Forces a redraw of everything in this screen. """
@@ -112,19 +113,7 @@ class ScreenState(object):
     def draw(self):
         """ Draws the current frame. Should be called only once per frame by
         the current GameState. """
-        
-        # The function for sorting blits. No use anywhere else
-        def sort_blits(blits):
-            """ Takes in a list of tuples (surface, position, layer) and sorts
-            it by layer in place. """
-            def sort_blits_cmp(x, y):
-                # These calls to _layers.index could get costly with more layers
-                return self._layers.index(x[2]) - self._layers.index(y[2])
-            # This may get slow if there are a lot of layers, but it's the least
-            # memory intensive version
-            blits.sort(sort_blits_cmp)
-        
-        
+                
         # Let's finish up any rendering from the previous frame
         # First, we put the background over all blits
         for i in self._clear_this_frame:
@@ -135,11 +124,11 @@ class ScreenState(object):
         # any static blits which were obscured    
         s = self._static_blits.values()
         if len(self._layers) > 1:
-            sort_blits(s)
-            sort_blits(self._blits)
+            s.sort(key=itemgetter(2))
+            self._blits.sort(key=itemgetter(2))
         i = j = 0
         # Reminder: blits are (surf, pos, layer)
-        for layer in self._layers:
+        for layer in range(len(self._layers)):
             while i < len(s) and s[i][2] == layer:
                 surf, pos, layer = s[i]
                 # Now, does this need to be redrawn
