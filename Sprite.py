@@ -13,6 +13,10 @@ class Sprite(object):
     
     def __setattr__(self, item, value):
         if item == 'position':
+            self.__dict__['position_age'] = 0
+            if self.__dict__['static']:
+                GetScreen().remove_static_blit(repr(self))
+                self.__dict__['static'] = False
             if "rect" in self.__dict__ and self.__dict__['rect'] != None:
                 self.__dict__['rect'] = pygame.Rect(value, self.rect.size)
             else:
@@ -21,6 +25,12 @@ class Sprite(object):
             layers = GetGame().get_layers()
             if value not in layers:
                 value = layers[0]
+            self.__dict__[item] = value
+        elif item == 'image' and self.__dict__['static'] == True:
+            GetScreen().static_blit(repr(self),
+                                    self.image,
+                                    self.position,
+                                    self.layer)
             self.__dict__[item] = value
         else:
             self.__dict__[item] = value
@@ -33,6 +43,8 @@ class Sprite(object):
     
     def __init__(self, *groups):
         """ Adds this sprite to any number of groups by default. """
+        self.__dict__['position_age'] = 0
+        self.__dict__['static'] = False
         self.image = None
         self.rect = None
         self.layer = None
@@ -61,9 +73,20 @@ class Sprite(object):
     def draw(self):
         """ Draw this object to the display. It will always use the current
             screen state for drawing. """
-        GetScreen().moving_blit(self.image,
-                                self.position,
-                                self.layer)
+        if self.__dict__['static']:
+            return
+        if self.__dict__['position_age'] > 5:
+            self.__dict__['static'] = True
+            GetScreen().static_blit(repr(self),
+                                    self.image,
+                                    self.position,
+                                    self.layer)
+        else:
+            GetScreen().moving_blit(self.image,
+                                    self.position,
+                                    self.layer)
+            self.__dict__['position_age'] += 1
+            
     def update(self, *args):
         """ Called once per frame. """
         pass
