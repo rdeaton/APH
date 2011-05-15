@@ -1,7 +1,7 @@
 import pygame
-from Utils import *
+from Utils import memoize
 from math import floor, ceil
-from Screen import *
+from Screen import ScreenState
 
 # These two funcs need to be here due to cyclic dependencies if put elsewhere.
 def GetGame():
@@ -15,6 +15,7 @@ def GetScreen():
 class GameState(object):
     """ Controls the current state of the program. """
     stack = []
+    frame = 0
     
     def __init__(self):
         """ Do some initialization. This puts filler variables in place
@@ -22,6 +23,7 @@ class GameState(object):
         self.quit = False
         self.screen_state = None
         self._layers = ['none']
+        self.fps = None
     
     def transition_in(self):
         """ Called when this state is transitioned into being. """
@@ -84,6 +86,18 @@ class GameState(object):
     def test_quit(self):
         if len(pygame.event.get(pygame.QUIT)) > 0:
             self.quit = True
+            
+    def main(self, clock, fps):
+        """ Calls the main loop function, and runs other APH facilities which
+        need to be run on a frame by frame basis. """
+        GameState.frame += 1
+        if self.fps is not None:
+            clock.tick(self.fps)
+        else:
+            clock.tick(fps)
+        if GameState.frame % 10 == 0:
+            print self.__class__.__name__ + " " + str(clock.get_fps())
+        self.main_loop()
         
 class NewGame(GameState):
     """ Represents a new game, and sets up the screen accordingly. """
