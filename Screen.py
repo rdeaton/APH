@@ -97,13 +97,23 @@ class ScreenState(object):
         self._clear_this_frame.append(self._screen.get_rect())
             
     def static_blit(self, name, surface, position, layer):
-        r = pygame.rect.Rect(position, surface.get_size())
-        self._static_blits['name'] = (self.__scale_surface(surface),
-                                      self.scale_rect(r),
-                                      self.__verify_layer(layer))
+        redraw = name in self._static_blits
+        new_surface = self.__scale_surface(surface)
+        r = pygame.rect.Rect(self.scale_pos(position), new_surface.get_size())
+        self._static_blits[name] = (new_surface,
+                                    r,
+                                    self.__verify_layer(layer))
         # We also add this as a moving blit for one frame, so that it actually
         # gets drawn for the first time
-        self.moving_blit(surface, position, layer)
+        if redraw:
+            self._clear_this_frame.append(r)
+    
+    def remove_static_blit(self, name):
+        try:
+            x = self._static_blits.pop(name)
+            self._clear_this_frame.append(x[1])
+        except:
+            pass
     
     def moving_blit(self, surface, position, layer = ''):
         self._blits.append( (self.__scale_surface(surface),
@@ -137,7 +147,8 @@ class ScreenState(object):
                         x = pos.clip(rect)
                         y = x.move(-pos.left,-pos.top)
                         b = surf.subsurface(y)
-                        _screen.blit(b, x)
+                        self._screen.blit(b, x)
+                        break
                 i = i+1
             while j < len(self._blits) and self._blits[j][2] == layer:
                 # These are moving blits, so we need to make sure that
