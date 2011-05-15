@@ -176,13 +176,11 @@ class ScreenState(object):
         
     def scale_pos(self, t):
         """ Scales a position tuple """
-        global _scalefactor
         return (floor(t[0] * self._scalefactor[0]),
                 ceil(t[1]  * self._scalefactor[1]))
     
     def unscale_pos(self, t):
         """ Unscales a position tuple """
-        global _scalefactor
         return (floor(t[0] / self._scalefactor[0]),
                 ceil(t[1]  / self._scalefactor[1]))
     
@@ -195,7 +193,6 @@ class ScreenState(object):
     
     def unscale_rect(self, r):
         """ Unscales a retangle """
-        global _scalefactor
         return pygame.Rect((floor(r.left   / self._scalefactor[0]),
                             floor(r.top    / self._scalefactor[1])),
                            (ceil( r.width  / self._scalefactor[0]),
