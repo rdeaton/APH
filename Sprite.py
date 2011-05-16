@@ -17,10 +17,7 @@ class Sprite(object):
             if self.__dict__['static']:
                 GetScreen().remove_static_blit(repr(self))
                 self.__dict__['static'] = False
-            if "rect2" in self.__dict__ and self.__dict__['rect2'] != None:
-                self.__dict__['rect2'] = pygame.Rect(value, self.rect.size)
-            else:
-                self.__dict__['rect2'] = pygame.Rect(value, self.image.get_size())                
+            self.__dict__['rect2'] = pygame.Rect(value, self.image.get_size())                
         elif item == 'layer':
             layers = GetGame().get_layers()
             if value not in layers:
