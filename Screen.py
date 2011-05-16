@@ -98,12 +98,15 @@ class ScreenState(object):
             
     def static_blit(self, name, surface, position, layer):
         redraw = name in self._static_blits
+        if redraw:
+            r2 = self._static_blits[name][1]
         new_surface = self.__scale_surface(surface)
         r = pygame.rect.Rect(self.scale_pos(position), new_surface.get_size())
         self._static_blits[name] = (new_surface,
                                     r,
                                     self.__verify_layer(layer))
-        self._clear_this_frame.append(r)
+        if redraw:
+            self._clear_this_frame.append(r2.union(r))
     
     def remove_static_blit(self, name):
         try:
