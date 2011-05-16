@@ -1,5 +1,5 @@
 import pygame
-from Utils import *
+from Utils import memoize2, new_surface
 from math import floor, ceil
 from operator import itemgetter
 
@@ -103,10 +103,7 @@ class ScreenState(object):
         self._static_blits[name] = (new_surface,
                                     r,
                                     self.__verify_layer(layer))
-        # We also add this as a moving blit for one frame, so that it actually
-        # gets drawn for the first time
-        if redraw:
-            self._clear_this_frame.append(r)
+        self._clear_this_frame.append(r)
     
     def remove_static_blit(self, name):
         try:
@@ -126,7 +123,9 @@ class ScreenState(object):
                 
         # Let's finish up any rendering from the previous frame
         # First, we put the background over all blits
+        x = self._background.get_rect()
         for i in self._clear_this_frame:
+            i = x.clip(i)
             b = self._background.subsurface(i)
             self._screen.blit(b, i)
         
@@ -144,10 +143,7 @@ class ScreenState(object):
                 # Now, does this need to be redrawn
                 for rect in self._clear_this_frame:
                     if pos.colliderect(rect):
-                        x = pos.clip(rect)
-                        y = x.move(-pos.left,-pos.top)
-                        b = surf.subsurface(y)
-                        self._screen.blit(b, x)
+                        self._screen.blit(surf, pos)
                         break
                 i = i+1
             while j < len(self._blits) and self._blits[j][2] == layer:
