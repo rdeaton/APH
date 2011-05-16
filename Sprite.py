@@ -17,10 +17,10 @@ class Sprite(object):
             if self.__dict__['static']:
                 GetScreen().remove_static_blit(repr(self))
                 self.__dict__['static'] = False
-            if "rect" in self.__dict__ and self.__dict__['rect'] != None:
-                self.__dict__['rect'] = pygame.Rect(value, self.rect.size)
+            if "rect2" in self.__dict__ and self.__dict__['rect2'] != None:
+                self.__dict__['rect2'] = pygame.Rect(value, self.rect.size)
             else:
-                self.__dict__['rect'] = pygame.Rect(value, self.image.get_size())                
+                self.__dict__['rect2'] = pygame.Rect(value, self.image.get_size())                
         elif item == 'layer':
             layers = GetGame().get_layers()
             if value not in layers:
@@ -32,12 +32,25 @@ class Sprite(object):
                                     self.position,
                                     self.layer)
             self.__dict__[item] = value
+        elif item == 'rect':
+            self.__dict__['position_age'] = 0
+            if self.__dict__['static']:
+                GetScreen().remove_static_blit(repr(self))
+                self.__dict__['static'] = False
+            self.__dict__['rect2'] = value
         else:
             self.__dict__[item] = value
             
     def __getattr__(self, item):
         if item == 'position':
-            return self.rect.topleft
+            return self.__dict__['rect2'].topleft
+        # We need this so people can do things like self.rect.center = ...
+        elif item == 'rect':
+            self.__dict__['position_age'] = 0
+            if self.__dict__['static']:
+                GetScreen().remove_static_blit(repr(self))
+                self.__dict__['static'] = False
+            return self.__dict__['rect2']
         else:
             return self.__dict__[item]
     
@@ -59,6 +72,8 @@ class Sprite(object):
                 
     def kill(self):
         """ Remove this sprite from all groups. """
+        if self.__dict__['static']:
+            GetScreen().remove_static_blit(repr(self))
         for g in self.groups:
             g.remove(self)
             
@@ -95,6 +110,10 @@ class Sprite(object):
         for g in groups:
             if g in self._groups:
                 self._groups.remove(g)
+                
+    def __del__(self):
+        if self.__dict__['static']:
+            GetScreen().remove_static_blit(repr(self))
         
 class MouseOverSprite(Sprite):
     """ Represents a set of actions which an object which needs to handle
