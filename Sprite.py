@@ -104,6 +104,10 @@ class Sprite(object):
         pass
         
     def remove(self, *groups):
+        if self.__dict__['static']:
+            self.__dict__['static'] = False
+            GetScreen().remove_static_blit(repr(self))
+            
         for g in groups:
             if g in self._groups:
                 self._groups.remove(g)
@@ -194,6 +198,7 @@ class Group(object):
         for sprite in sprites:
             if sprite in self._sprites:
                 self._sprites.remove(sprite)
+                sprite.remove(self)
     
     def add(self, *sprites):
         """ Adds an object to its drawable list. """
