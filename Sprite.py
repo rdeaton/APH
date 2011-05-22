@@ -22,7 +22,7 @@ class Sprite(object):
     def __init__(self, *groups):
         """ Adds this sprite to any number of groups by default. """
         _all_sprites.append(wref(self))
-        self._last_frame = GetGame().frame
+        self._age = 0
         self._static = False
         self._image = None
         self._rect = None
@@ -36,15 +36,18 @@ class Sprite(object):
                                 self._image,
                                 self.position,
                                 self._layer)
+        self._static = True
     
     def _expire_static(self):
-        GetScreen().remove_static_blit(repr(self))
+        if self._static:
+            GetScreen().remove_static_blit(repr(self))
         self._static = False
-        self._last_frame = GetGame().frame
+        self._age = 0
         
     def _set_pos(self, pos):
         self._rect = pygame.Rect(pos, self._image.get_size())
-        self._expire_static()
+        if self._static:
+            self._expire_static()
         
     def _get_pos(self):
         return self._rect.topleft
@@ -59,20 +62,22 @@ class Sprite(object):
         if layer not in layers:
             layer = layers[0]
         self._layer = layer
-        self._expire_static()
+        if self._static:
+            self._expire_static()
         
     def _get_image(self):
         return self._image
         
     def _set_image(self, image):
         self._image = image
-        if self._static is True:
+        if self._static:
             self._expire_static()
             
     def _get_rect(self):
         # Wish this didn't need to be done, but rects can be modified
         # indirectly by setting something like self.rect.center
-        self._expire_static()
+        if self._static:
+            self._expire_static()
         return self._rect
         
     def _set_rect(self, rect):
@@ -110,12 +115,13 @@ class Sprite(object):
             screen state for drawing. """
         if self._static:
             return
-        if GetGame().frame - self._last_frame > 5:
+        if self._age > 5:
             self._set_static()
         else:
             GetScreen().moving_blit(self.image,
                                     self.position,
                                     self.layer)
+            self._age += 1
                                     
     def update(self, *args):
         """ Called once per frame. """
