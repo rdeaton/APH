@@ -135,35 +135,38 @@ class ScreenState(object):
         # Now, we need to blit layers, while simultaneously re-blitting
         # any static blits which were obscured    
         s = self._static_blits.values()
+        blits = self._blits
+        screen = self._screen
+        clear = self._clear_this_frame
+        screen_rect = screen.get_rect()
         if len(self._layers) > 1:
             s.sort(key=itemgetter(2))
-            self._blits.sort(key=itemgetter(2))
+            blits.sort(key=itemgetter(2))
         i = j = 0
         # Reminder: blits are (surf, pos, layer)
         for layer in range(len(self._layers)):
             while i < len(s) and s[i][2] == layer:
                 surf, pos, layer = s[i]
                 # Now, does this need to be redrawn
-                for rect in self._clear_this_frame:
+                for rect in clear:
                     if pos.colliderect(rect):
-                        self._screen.blit(surf, pos)
+                        screen.blit(surf, pos)
                         break
                 i = i+1
-            while j < len(self._blits) and self._blits[j][2] == layer:
+            while j < len(blits) and blits[j][2] == layer:
                 # These are moving blits, so we need to make sure that
                 # they will be cleared on the next frame
-                surf, pos = self._blits[j][0], self._blits[j][1]
-                screen_rect = self._screen.get_rect()
+                surf, pos = blits[j][0], blits[j][1]
                 blit_rect = pygame.Rect(pos, surf.get_size())
                 if screen_rect.contains(blit_rect):
-                    r = self._screen.blit(surf, pos)
-                    self._clear_next_frame.append(r)
+                    r = screen.blit(surf, pos)
+                    clear.append(r)
                 elif screen_rect.colliderect(blit_rect):
                     x = blit_rect.clip(screen_rect)
                     y = x.move(-blit_rect.left,-blit_rect.top)
                     b = surf.subsurface(y)
-                    r = self._screen.blit(b, x)
-                    self._clear_next_frame.append(r)              
+                    r = screen.blit(b, x)
+                    clear.append(r)              
                 j = j + 1
         
         # Do the display update
