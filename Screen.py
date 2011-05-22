@@ -141,7 +141,8 @@ class ScreenState(object):
         s = self._static_blits.values()
         blits = self._blits
         screen = self._screen
-        clear = self._clear_this_frame
+        clear_this = self._clear_this_frame
+        clear_next = self._clear_next_frame
         screen_rect = screen.get_rect()
         if len(self._layers) > 1:
             s.sort(key=itemgetter(2))
@@ -152,7 +153,7 @@ class ScreenState(object):
             while i < len(s) and s[i][2] == layer:
                 surf, pos, layer = s[i]
                 # Now, does this need to be redrawn
-                for rect in clear:
+                for rect in clear_this:
                     if pos.colliderect(rect):
                         screen.blit(surf, pos)
                         break
@@ -164,13 +165,13 @@ class ScreenState(object):
                 blit_rect = pygame.Rect(pos, surf.get_size())
                 if screen_rect.contains(blit_rect):
                     r = screen.blit(surf, pos)
-                    clear.append(r)
+                    clear_next.append(r)
                 elif screen_rect.colliderect(blit_rect):
                     x = blit_rect.clip(screen_rect)
                     y = x.move(-blit_rect.left,-blit_rect.top)
                     b = surf.subsurface(y)
                     r = screen.blit(b, x)
-                    clear.append(r)              
+                    clear_next.append(r)              
                 j = j + 1
         
         # Do the display update
