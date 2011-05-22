@@ -15,7 +15,7 @@ def GetScreen():
 class GameState(object):
     """ Controls the current state of the program. """
     stack = []
-    frame = 0
+    frame = -1
     
     def __init__(self):
         """ Do some initialization. This puts filler variables in place
