@@ -94,6 +94,8 @@ class ScreenState(object):
             
     def redraw(self):
         """ Forces a redraw of everything in this screen. """
+        from Sprite import _switch_game
+        _switch_game()
         self._clear_this_frame.append(self._screen.get_rect())
             
     def static_blit(self, name, surface, position, layer):
@@ -107,6 +109,8 @@ class ScreenState(object):
                                     self.__verify_layer(layer))
         if redraw:
             self._clear_this_frame.append(r2.union(r))
+        else:
+            self._clear_this_frame.append(r)
     
     def remove_static_blit(self, name):
         try:

@@ -1,6 +1,14 @@
 import pygame
 from Game import *
 import Mouse
+from weakref import ref as wref
+
+_all_sprites = []
+
+def _switch_game():
+    for s in _all_sprites:
+        if s() is not None:
+            s()._expire_static()
 
 class Sprite(object):
     """ Analagous to Sprite in pygame, but automatically handles dirty updates,
@@ -10,68 +18,83 @@ class Sprite(object):
     feature, setting Sprite.position will automatically set Sprite.rect to a
     rect starting from position with the size of the image, and accessing
     Sprite.position will return the top left coordinate of Sprite.rect """
-    
-    def __setattr__(self, item, value):
-        if item == 'position':
-            self.__dict__['position_age'] = 0
-            if self.__dict__['static']:
-                GetScreen().remove_static_blit(repr(self))
-                self.__dict__['static'] = False
-            self.__dict__['rect2'] = pygame.Rect(value, self.image.get_size())                
-        elif item == 'layer':
-            layers = GetGame().get_layers()
-            if value not in layers:
-                value = layers[0]
-            self.__dict__[item] = value
-        elif item == 'image' and self.__dict__['static'] == True:
-            GetScreen().static_blit(repr(self),
-                                    self.image,
-                                    self.position,
-                                    self.layer)
-            self.__dict__[item] = value
-        elif item == 'rect':
-            self.__dict__['position_age'] = 0
-            if self.__dict__['static']:
-                GetScreen().remove_static_blit(repr(self))
-                self.__dict__['static'] = False
-            self.__dict__['rect2'] = value
-        else:
-            self.__dict__[item] = value
-            
-    def __getattr__(self, item):
-        if item == 'position':
-            return self.__dict__['rect2'].topleft
-        # We need this so people can do things like self.rect.center = ...
-        elif item == 'rect':
-            self.__dict__['position_age'] = 0
-            if self.__dict__['static']:
-                GetScreen().remove_static_blit(repr(self))
-                self.__dict__['static'] = False
-            return self.__dict__['rect2']
-        else:
-            return self.__dict__[item]
-    
+
     def __init__(self, *groups):
         """ Adds this sprite to any number of groups by default. """
-        self.__dict__['position_age'] = 0
-        self.__dict__['static'] = False
-        self.image = None
-        self.rect = None
-        self.layer = None
+        _all_sprites.append(wref(self))
+        self._last_frame = GetGame().frame
+        self._static = False
+        self._image = None
+        self._rect = None
+        self._layer = None
         self._groups = []
+        self._game = GetGame()
         self.add(*groups)
+    
+    def _set_static(self):
+        GetScreen().static_blit(repr(self),
+                                self._image,
+                                self.position,
+                                self._layer)
+    
+    def _expire_static(self):
+        GetScreen().remove_static_blit(repr(self))
+        self._static = False
+        self._last_frame = GetGame().frame
+        
+    def _set_pos(self, pos):
+        self._rect = pygame.Rect(pos, self._image.get_size())
+        self._expire_static()
+        
+    def _get_pos(self):
+        return self._rect.topleft
+        
+    def _get_layer(self):
+        if self._layer is None:
+            return GetGame().get_layers()[0]
+        return self._layer
+        
+    def _set_layer(self, layer):
+        layers = GetGame().get_layers()
+        if layer not in layers:
+            layer = layers[0]
+        self._layer = layer
+        self._expire_static()
+        
+    def _get_image(self):
+        return self._image
+        
+    def _set_image(self, image):
+        self._image = image
+        if self._static is True:
+            self._expire_static()
+            
+    def _get_rect(self):
+        # Wish this didn't need to be done, but rects can be modified
+        # indirectly by setting something like self.rect.center
+        self._expire_static()
+        return self._rect
+        
+    def _set_rect(self, rect):
+        self._expire_static()
+        self._rect = rect
+        
+    position = property(_get_pos, _set_pos)
+    layer = property(_get_layer, _set_layer)
+    image = property(_get_image, _set_image)
+    rect = property(_get_rect, _set_rect)
         
     def add(self, *groups):
-        """ Add this sprite to groups."""
+        self._expire_static()
         for g in groups:
-            if g.add(self):
+            if g not in self._groups:
                 self._groups.append(g)
+                g.add(self)
                 
     def kill(self):
         """ Remove this sprite from all groups. """
-        if self.__dict__['static']:
-            GetScreen().remove_static_blit(repr(self))
-        for g in self.groups:
+        self._expire_static()
+        for g in self._groups:
             g.remove(self)
             
     def alive(self):
@@ -85,36 +108,27 @@ class Sprite(object):
     def draw(self):
         """ Draw this object to the display. It will always use the current
             screen state for drawing. """
-        if self.__dict__['static']:
+        if self._static:
             return
-        if self.__dict__['position_age'] > 5:
-            self.__dict__['static'] = True
-            GetScreen().static_blit(repr(self),
-                                    self.image,
-                                    self.position,
-                                    self.layer)
+        if GetGame().frame - self._last_frame > 5:
+            self._set_static()
         else:
             GetScreen().moving_blit(self.image,
                                     self.position,
                                     self.layer)
-            self.__dict__['position_age'] += 1
-            
+                                    
     def update(self, *args):
         """ Called once per frame. """
         pass
         
     def remove(self, *groups):
-        if self.__dict__['static']:
-            self.__dict__['static'] = False
-            GetScreen().remove_static_blit(repr(self))
-            
+        self._expire_static()
         for g in groups:
             if g in self._groups:
                 self._groups.remove(g)
                 
     def __del__(self):
-        if self.__dict__['static']:
-            GetScreen().remove_static_blit(repr(self))
+        GetScreen().remove_static_blit(repr(self))
         
 class MouseOverSprite(Sprite):
     """ Represents a set of actions which an object which needs to handle
