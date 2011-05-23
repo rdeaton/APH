@@ -207,11 +207,11 @@ class Group(object):
         
     def draw(self):
         """ Calls draw on all of its Sprites. """
-        map(lambda x: x.draw(), self._sprites)
+        [x.draw() for x in self._sprites]
     
     def update(self, *args):
         """ Calls update on all of its Sprites. """ 
-        map(lambda x: x.update(*args), self._sprites)
+        [x.update(*args) for x in self._sprites]
         
     def remove(self, *sprites):
         """ Removes Sprites from this Group. """
