@@ -46,6 +46,7 @@ class Sprite(object):
         
     def _set_pos(self, pos):
         self._rect = pygame.Rect(pos, self._image.get_size())
+        self._age = 0
         if self._static:
             self._expire_static()
         
@@ -78,10 +79,13 @@ class Sprite(object):
         # indirectly by setting something like self.rect.center
         if self._static:
             self._expire_static()
+        self._age = 0
         return self._rect
         
     def _set_rect(self, rect):
-        self._expire_static()
+        if self._static:
+            self._expire_static()
+        self._age = 0
         self._rect = rect
         
     position = property(_get_pos, _set_pos)
