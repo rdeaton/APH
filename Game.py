@@ -24,6 +24,7 @@ class GameState(object):
         self.screen_state = None
         self._layers = ['none']
         self.fps = None
+        self.fps_log = []
     
     def transition_in(self):
         """ Called when this state is transitioned into being. """
@@ -92,11 +93,11 @@ class GameState(object):
         need to be run on a frame by frame basis. """
         GameState.frame += 1
         if self.fps is not None:
-            clock.tick(self.fps)
+            clock.tick_busy_loop(self.fps)
         else:
-            clock.tick(fps)
-        if GameState.frame % 10 == 0:
-            print self.__class__.__name__ + " " + str(clock.get_fps())
+            clock.tick_busy_loop(fps)
+        if GameState.frame > 0 and GameState.frame % 10 == 0:
+            self.fps_log.append(clock.get_fps())
         self.main_loop()
         
 class NewGame(GameState):
