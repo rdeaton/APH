@@ -45,7 +45,10 @@ class Sprite(object):
         self._age = 0
         
     def _set_pos(self, pos):
-        self._rect = pygame.Rect(pos, self._image.get_size())
+        if self._image is None:
+            self._rect = pygame.Rect(pos, (1,1))
+        else:
+            self._rect = pygame.Rect(pos, self._image.get_size())
         self._age = 0
         if self._static:
             self._expire_static()
